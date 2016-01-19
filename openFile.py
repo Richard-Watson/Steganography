@@ -1,4 +1,4 @@
-file = open('IRremote.zip', 'rb')
+file = open("toCrypt", "rb")
 originalFile = bytearray(file.read())
 file.close()
 dividedFile = []

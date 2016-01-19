@@ -1,7 +1,6 @@
 from PIL import Image, ImageDraw
-from openFile import dividedFile
 
-image = Image.open("temp1.jpg") #Открываем изображение.
+image = Image.open("ans1.jpg") #Открываем изображение.
 draw = ImageDraw.Draw(image) #Создаем инструмент для рисования.
 width = image.size[0] #Определяем ширину.
 height = image.size[1] #Определяем высоту.
@@ -12,14 +11,15 @@ for i in range(width):
     for j in range(height):
         for color in range(0, 3):
             originalFileRGB.append(pix[i, j][color])
-for i in range(0, len(dividedFile)):
-    originalFileRGB[i] = (originalFileRGB[i] & 0b11111100) + dividedFile[i]
 
-color = 0
-for i in range(width):
-    for j in range(height):
-        draw.point((i, j), (originalFileRGB[color], originalFileRGB[color + 1], originalFileRGB[color + 2]))
-        color += 3
+letter = 0
+message = ""
+for j in range(0, 4):
+    letter <<= 2
+    letter += originalFileRGB[j + i] & 0b11
+message += chr(letter)
+crypt_byte = bytearray(bytes(message, encoding="utf-8"))
 
-image.save("ans1.jpg", "JPEG")
-del draw
+f = open('out', 'wb')
+f.write(crypt_byte)
+f.close()
