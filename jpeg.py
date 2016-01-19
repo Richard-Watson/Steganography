@@ -1,13 +1,14 @@
 from PIL import Image, ImageDraw
 from openFile import dividedFile
 
-image = Image.open("temp1.jpg") #Открываем изображение.
-draw = ImageDraw.Draw(image) #Создаем инструмент для рисования.
-width = image.size[0] #Определяем ширину.
-height = image.size[1] #Определяем высоту.
-pix = image.load() #Выгружаем значения пикселей.
+image = Image.open('ans1.png')  # Открываем изображение
+draw = ImageDraw.Draw(image)  # Создаем инструмент для рисования
+width = image.size[0]  # Определяем ширину
+height = image.size[1]  # Определяем высоту
+pix = image.load()  # Выгружаем значения пикселей
 
 originalFileRGB = []
+test = 0
 for i in range(width):
     for j in range(height):
         for color in range(0, 3):
@@ -21,5 +22,5 @@ for i in range(width):
         draw.point((i, j), (originalFileRGB[color], originalFileRGB[color + 1], originalFileRGB[color + 2]))
         color += 3
 
-image.save("ans1.jpg", "JPEG")
+image.save("ans1.png")
 del draw
