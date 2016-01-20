@@ -1,9 +1,10 @@
-from steg import stegano
+from steg import steg
 
 
-# Парсер
+# здесь будет парсер
 
 containerName = "google.png"
 hideName = "toCrypt"
 
-stegano(containerName, hideName)
+if not steg(containerName, hideName):
+    print("Контейнер мал")
