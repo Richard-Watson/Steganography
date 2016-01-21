@@ -1,7 +1,7 @@
 from PIL import Image, ImageDraw
 
-def getDividedFile(filename):
 
+def getDividedFile(filename):
     file = open(filename, "rb")
     originalFile = bytearray(file.read())
     file.close()
@@ -13,6 +13,14 @@ def getDividedFile(filename):
         dividedFile.append((originalFile[i] & 0b1100) >> 2)
         dividedFile.append(originalFile[i] & 0b11)
     return dividedFile
+
+
+def getDividedFileSize(dividedFileLen):
+    size = []
+    for i in range(0, 16):
+        size.append((dividedFileLen & (0b11000000000000000000000000000000 >> i * 2)) >> 30 - i * 2)
+    return size
+
 
 def getContainerArray(pix, width, height, length):
     ContainerArray = []
@@ -28,11 +36,14 @@ def getContainerArray(pix, width, height, length):
         i += 1
     return ContainerArray
 
+
 def writeLSB(ContainerArray, dividedFile, stegInfoSize):
     for i in range(0, len(dividedFile)):
         ContainerArray[stegInfoSize + i] = (ContainerArray[stegInfoSize + i] & 0b11111100) + dividedFile[i]
 
+
 def steg(container, hideFile):
+    # Загружаем изображение-контейнер
     image = Image.open(container)  # Открываем изображение
     draw = ImageDraw.Draw(image)  # Создаем инструмент для рисования
     width = image.size[0]  # Определяем ширину
@@ -40,10 +51,11 @@ def steg(container, hideFile):
     pix = image.load()  # Выгружаем значения пикселей
 
     stegInfoSize = 5 * 4
-    dividedFile = getDividedFile(hideFile)
+    dividedFile = getDividedFile(hideFile)  # Массив из последних двух битов каждого байта скрываемого файла
 
     if height * width * 3 >= len(dividedFile) + stegInfoSize:
         originalFileRGB = getContainerArray(pix, width, height, len(dividedFile) + stegInfoSize)
+        writeLSB(originalFileRGB, getDividedFileSize(len(dividedFile)), stegInfoSize - 4 * 4)
         writeLSB(originalFileRGB, dividedFile, stegInfoSize)
 
         color = 0
