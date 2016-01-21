@@ -13,15 +13,16 @@ def getDividedFile(filename):
         dividedFile.append((originalFile[i] & 0b1100) >> 2)
         dividedFile.append(originalFile[i] & 0b11)
     return dividedFile
-
-
 def getDividedFileSize(dividedFileLen):
     size = []
     for i in range(0, 16):
         size.append((dividedFileLen & (0b11000000000000000000000000000000 >> i * 2)) >> 30 - i * 2)
     return size
-
-
+def getExtensionSizeArray(dividedFileLen):
+    size = []
+    for i in range(0, 2):
+        size.append((dividedFileLen & (0b1100 >> i * 2)) >> 2 - i * 2)
+    return size
 def getContainerArray(pix, width, height, length):
     ContainerArray = []
     i = 0
@@ -35,14 +36,21 @@ def getContainerArray(pix, width, height, length):
             j += 1
         i += 1
     return ContainerArray
-
-
 def writeLSB(ContainerArray, dividedFile, stegInfoSize):
     for i in range(0, len(dividedFile)):
         ContainerArray[stegInfoSize + i] = (ContainerArray[stegInfoSize + i] & 0b11111100) + dividedFile[i]
 
 
 def steg(container, hideFile):
+
+    extension = container[container.rfind(".") + 1:]
+    extension = bytes(extension, encoding = 'utf-8')
+    extension = bytearray(extension)
+    extensionArray = []
+    for i in range(0, len(extension)):
+        for j in range(0, 4):
+            extensionArray.append((extension[i] & (0b11000000 >> j * 2)) >> 6 - j * 2)
+
     # Загружаем изображение-контейнер
     image = Image.open(container)  # Открываем изображение
     draw = ImageDraw.Draw(image)  # Создаем инструмент для рисования
@@ -50,7 +58,8 @@ def steg(container, hideFile):
     height = image.size[1]  # Определяем высоту
     pix = image.load()  # Выгружаем значения пикселей
 
-    stegInfoSize = 5 * 4
+    extensionInfoSize = len(extensionArray)
+    stegInfoSize = 4 + extensionInfoSize
     dividedFile = getDividedFile(hideFile)  # Массив из последних двух битов каждого байта скрываемого файла
 
     if height * width * 3 >= len(dividedFile) + stegInfoSize:
