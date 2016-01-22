@@ -1,6 +1,6 @@
 from PIL import Image, ImageDraw
 
-# Принимает bytearray или int, возвращает list значений 0 - 3
+# Принимает bytearray или int, возвращает list значений 0-3
 def ByteTo2Bit(Input, byteAmount = 1):
     Output = []
     byteSize = 8
@@ -21,6 +21,8 @@ def ByteTo2Bit(Input, byteAmount = 1):
 
     return Output
 
+
+# Возвращает list значений 0-255 (цвета пикселей)
 def getContainerArray(pix, width, height, requiredLength):
     ContainerArray = []
     i = 0
@@ -34,9 +36,12 @@ def getContainerArray(pix, width, height, requiredLength):
             j += 1
         i += 1
     return ContainerArray
-def writeLSB(ContainerArray, dividedFile, stegInfoSize):
-    for i in range(0, len(dividedFile)):
-        ContainerArray[stegInfoSize + i] = (ContainerArray[stegInfoSize + i] & 0b11111100) + dividedFile[i]
+
+
+# Записывает в последние 2 бита каждого байта ContainerList значения из bitList, начиная со смещения shift
+def writeLSB(ContainerList, bitList, shift):
+    for i in range(0, len(bitList)):
+        ContainerList[shift + i] = (ContainerList[shift + i] & 0b11111100) | bitList[i]
 
 
 def steg(container, hideFile):
