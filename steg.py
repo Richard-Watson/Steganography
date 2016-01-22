@@ -21,24 +21,14 @@ def ByteTo2Bit(Input, byteAmount = 1):
 
     return Output
 
-def getDividedFile(filename):
-
-
-    dividedFile = []
-    for i in range(0, len(originalFile)):
-        dividedFile.append((originalFile[i] & 0b11000000) >> 6)
-        dividedFile.append((originalFile[i] & 0b110000) >> 4)
-        dividedFile.append((originalFile[i] & 0b1100) >> 2)
-        dividedFile.append(originalFile[i] & 0b11)
-    return dividedFile
-def getContainerArray(pix, width, height, length):
+def getContainerArray(pix, width, height, requiredLength):
     ContainerArray = []
     i = 0
-    while i < width and len(ContainerArray) < length or len(ContainerArray) % 3:
+    while i < width and len(ContainerArray) < requiredLength or len(ContainerArray) % 3:
         j = 0
-        while j < height and len(ContainerArray) < length or len(ContainerArray) % 3:
+        while j < height and len(ContainerArray) < requiredLength or len(ContainerArray) % 3:
             color = 0
-            while color < 3 and len(ContainerArray) < length or len(ContainerArray) % 3:
+            while color < 3 and len(ContainerArray) < requiredLength or len(ContainerArray) % 3:
                 ContainerArray.append(pix[i, j][color])
                 color += 1
             j += 1
