@@ -18,10 +18,10 @@ def getDividedFileSize(dividedFileLen):
     for i in range(0, 16):
         size.append((dividedFileLen & (0b11000000000000000000000000000000 >> i * 2)) >> 30 - i * 2)
     return size
-def getExtensionSizeArray(dividedFileLen):
+def getExtensionSizeArray(dividedFileLen): # Выдает массив из 1 байта с размером расширения
     size = []
-    for i in range(0, 2):
-        size.append((dividedFileLen & (0b1100 >> i * 2)) >> 2 - i * 2)
+    for i in range(0, 4):
+        size.append((dividedFileLen & (0b11000000 >> i * 2)) >> 6 - i * 2)
     return size
 def getContainerArray(pix, width, height, length):
     ContainerArray = []
@@ -43,14 +43,6 @@ def writeLSB(ContainerArray, dividedFile, stegInfoSize):
 
 def steg(container, hideFile):
 
-    extension = container[container.rfind(".") + 1:]
-    extension = bytes(extension, encoding = 'utf-8')
-    extension = bytearray(extension)
-    extensionArray = []
-    for i in range(0, len(extension)):
-        for j in range(0, 4):
-            extensionArray.append((extension[i] & (0b11000000 >> j * 2)) >> 6 - j * 2)
-
     # Загружаем изображение-контейнер
     image = Image.open(container)  # Открываем изображение
     draw = ImageDraw.Draw(image)  # Создаем инструмент для рисования
@@ -58,14 +50,21 @@ def steg(container, hideFile):
     height = image.size[1]  # Определяем высоту
     pix = image.load()  # Выгружаем значения пикселей
 
-    extensionInfoSize = len(extensionArray)
-    stegInfoSize = 4 + extensionInfoSize
+    extension = bytearray(bytes(container[container.rfind(".") + 1:], encoding = 'utf-8'))
+    extensionArray = []
+    for i in range(0, len(extension)):
+        for j in range(0, 4):
+            extensionArray.append((extension[i] & (0b11000000 >> j * 2)) >> 6 - j * 2)
+
     dividedFile = getDividedFile(hideFile)  # Массив из последних двух битов каждого байта скрываемого файла
+    stegInfoSize = 4 + len(extensionArray) + 16
 
     if height * width * 3 >= len(dividedFile) + stegInfoSize:
         originalFileRGB = getContainerArray(pix, width, height, len(dividedFile) + stegInfoSize)
-        writeLSB(originalFileRGB, getDividedFileSize(len(dividedFile)), stegInfoSize - 4 * 4)
-        writeLSB(originalFileRGB, dividedFile, stegInfoSize)
+        writeLSB(originalFileRGB, getExtensionSizeArray(len(extensionArray)), 0)
+        writeLSB(originalFileRGB, extensionArray, 4)
+        writeLSB(originalFileRGB, getDividedFileSize(len(dividedFile)), 4 + 12)
+        writeLSB(originalFileRGB, dividedFile, 4 + 12 + 16)
 
         color = 0
         i = 0
