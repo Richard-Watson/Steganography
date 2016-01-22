@@ -1,10 +1,28 @@
 from PIL import Image, ImageDraw
 
+# Принимает bytearray или int, возвращает list значений 0 - 3
+def ByteTo2Bit(Input, byteAmount = 1):
+    Output = []
+    byteSize = 8
+    shift = int(byteSize / 2 - 1) * 2
+    if type(Input) is bytearray:
+        for i in range(0, len(Input)):
+            for j in range(0, int(byteSize / 2)):
+                Output.append((Input[i] & (0b11000000 >> j * 2)) >> shift - j * 2)
+
+    elif type(Input) is int:
+        if byteAmount == 4:
+            shift = byteSize * 4 - 2
+            for i in range(0, byteSize * 2):
+                Output.append((Input & (0b11000000000000000000000000000000 >> i * 2)) >> shift - i * 2)
+        elif byteAmount == 1:
+            for i in range(0, int(byteSize / 2)):
+                Output.append((Input & (0b11000000 >> i * 2)) >> shift - i * 2)
+
+    return Output
 
 def getDividedFile(filename):
-    file = open(filename, "rb")
-    originalFile = bytearray(file.read())
-    file.close()
+
 
     dividedFile = []
     for i in range(0, len(originalFile)):
@@ -13,16 +31,6 @@ def getDividedFile(filename):
         dividedFile.append((originalFile[i] & 0b1100) >> 2)
         dividedFile.append(originalFile[i] & 0b11)
     return dividedFile
-def getDividedFileSize(dividedFileLen):
-    size = []
-    for i in range(0, 16):
-        size.append((dividedFileLen & (0b11000000000000000000000000000000 >> i * 2)) >> 30 - i * 2)
-    return size
-def getExtensionSizeArray(dividedFileLen): # Выдает массив из 1 байта с размером расширения
-    size = []
-    for i in range(0, 4):
-        size.append((dividedFileLen & (0b11000000 >> i * 2)) >> 6 - i * 2)
-    return size
 def getContainerArray(pix, width, height, length):
     ContainerArray = []
     i = 0
@@ -50,11 +58,13 @@ def steg(container, hideFile):
     height = image.size[1]  # Определяем высоту
     pix = image.load()  # Выгружаем значения пикселей
 
-    extension = bytearray(bytes(container[container.rfind(".") + 1:], encoding = 'utf-8'))
-    extensionArray = []
-    for i in range(0, len(extension)):
-        for j in range(0, 4):
-            extensionArray.append((extension[i] & (0b11000000 >> j * 2)) >> 6 - j * 2)
+    file = open(hideFile, "rb")
+    stegfile = bytearray(file.read())
+    file.close()
+    stegfile = ByteTo2Bit(stegfile)
+
+    extensionArray = ByteTo2Bit(bytearray(bytes(container[container.rfind(".") + 1:], encoding = 'utf-8')))
+    extensionArray = ByteTo2Bit(12)
 
     dividedFile = getDividedFile(hideFile)  # Массив из последних двух битов каждого байта скрываемого файла
     stegInfoSize = 4 + len(extensionArray) + 16
