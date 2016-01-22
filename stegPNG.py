@@ -80,7 +80,7 @@ def steg(container, hideFile):
                 color += 3
                 j += 1
             i += 1
-        image.save(container)
+        image.save(container[:-4] + "_steg" + container[-4:])
         return True
     else:
         return False

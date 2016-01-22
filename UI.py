@@ -1,4 +1,4 @@
-from steg import steg
+from stegPNG import steg
 
 
 # здесь будет парсер
