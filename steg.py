@@ -1,7 +1,7 @@
 from PIL import Image, ImageDraw
 
 # Принимает bytearray или int, возвращает list значений 0-3
-def ByteTo2Bit(Input, byteAmount = 1):
+def ByteToBitPairs(Input, byteAmount = 1):
     Output = []
     byteSize = 8
     shift = int(byteSize / 2 - 1) * 2
@@ -37,7 +37,7 @@ def getContainerList(pix, width, height, requiredLength):
     return ContainerList
 
 # Записывает в последние 2 бита каждого байта ContainerList значения из bitList, начиная со смещения shift
-def writeLSB(ContainerList, bitList, shift):
+def writeLSB(ContainerList, bitList, shift = 0):
     for i in range(0, len(bitList)):
         ContainerList[shift + i] = (ContainerList[shift + i] & 0b11111100) | bitList[i]
 
@@ -52,29 +52,31 @@ def steg(container, hideFile):
     pix = image.load()  # Выгружаем значения пикселей
 
     file = open(hideFile, "rb")
-    stegfile = bytearray(file.read())
+    stegFileList = bytearray(file.read())
     file.close()
-    stegfile = ByteTo2Bit(stegfile)
 
-    extensionArray = ByteTo2Bit(bytearray(bytes(container[container.rfind(".") + 1:], encoding = 'utf-8')))
-    extensionArray = ByteTo2Bit(12)
+    try:
+        extensionList = ByteToBitPairs(bytearray(bytes(hideFile[hideFile.rindex(".") + 1:], encoding ='utf-8')))
+    except ValueError:
+        extensionList = ByteToBitPairs(bytearray(bytes("", encoding ='utf-8')))
+    extensionListSize = ByteToBitPairs(len(extensionList))
+    stegFileList = ByteToBitPairs(stegFileList)
+    stegFileListSize = ByteToBitPairs(len(stegFileList), 4)
+    requiredLength = len(extensionListSize) + len(extensionList) + len(stegFileListSize) + len(stegFileList)
 
-    dividedFile = getDividedFile(hideFile)  # Массив из последних двух битов каждого байта скрываемого файла
-    stegInfoSize = 4 + len(extensionArray) + 16
-
-    if height * width * 3 >= len(dividedFile) + stegInfoSize:
-        originalFileRGB = getContainerList(pix, width, height, len(dividedFile) + stegInfoSize)
-        writeLSB(originalFileRGB, getExtensionSizeArray(len(extensionArray)), 0)
-        writeLSB(originalFileRGB, extensionArray, 4)
-        writeLSB(originalFileRGB, getDividedFileSize(len(dividedFile)), 4 + 12)
-        writeLSB(originalFileRGB, dividedFile, 4 + 12 + 16)
+    if height * width * 3 >= requiredLength:
+        ContainerList = getContainerList(pix, width, height, requiredLength)
+        writeLSB(ContainerList, extensionListSize)
+        writeLSB(ContainerList, extensionList, len(extensionListSize))
+        writeLSB(ContainerList, stegFileListSize, len(extensionListSize) + len(extensionList))
+        writeLSB(ContainerList, stegFileList, len(extensionListSize) + len(extensionList) + len(stegFileListSize))
 
         color = 0
         i = 0
-        while i < width and color < len(dividedFile) + stegInfoSize:
+        while i < width and color < requiredLength:
             j = 0
-            while j < height and color < len(dividedFile) + stegInfoSize:
-                draw.point((i, j), (originalFileRGB[color], originalFileRGB[color + 1], originalFileRGB[color + 2]))
+            while j < height and color < requiredLength:
+                draw.point((i, j), (ContainerList[color], ContainerList[color + 1], ContainerList[color + 2]))
                 color += 3
                 j += 1
             i += 1
