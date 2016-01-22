@@ -21,22 +21,20 @@ def ByteTo2Bit(Input, byteAmount = 1):
 
     return Output
 
-
 # Возвращает list значений 0-255 (цвета пикселей)
-def getContainerArray(pix, width, height, requiredLength):
-    ContainerArray = []
+def getContainerList(pix, width, height, requiredLength):
+    ContainerList = []
     i = 0
-    while i < width and len(ContainerArray) < requiredLength or len(ContainerArray) % 3:
+    while i < width and len(ContainerList) < requiredLength or len(ContainerList) % 3:
         j = 0
-        while j < height and len(ContainerArray) < requiredLength or len(ContainerArray) % 3:
+        while j < height and len(ContainerList) < requiredLength or len(ContainerList) % 3:
             color = 0
-            while color < 3 and len(ContainerArray) < requiredLength or len(ContainerArray) % 3:
-                ContainerArray.append(pix[i, j][color])
+            while color < 3 and len(ContainerList) < requiredLength or len(ContainerList) % 3:
+                ContainerList.append(pix[i, j][color])
                 color += 1
             j += 1
         i += 1
-    return ContainerArray
-
+    return ContainerList
 
 # Записывает в последние 2 бита каждого байта ContainerList значения из bitList, начиная со смещения shift
 def writeLSB(ContainerList, bitList, shift):
@@ -65,7 +63,7 @@ def steg(container, hideFile):
     stegInfoSize = 4 + len(extensionArray) + 16
 
     if height * width * 3 >= len(dividedFile) + stegInfoSize:
-        originalFileRGB = getContainerArray(pix, width, height, len(dividedFile) + stegInfoSize)
+        originalFileRGB = getContainerList(pix, width, height, len(dividedFile) + stegInfoSize)
         writeLSB(originalFileRGB, getExtensionSizeArray(len(extensionArray)), 0)
         writeLSB(originalFileRGB, extensionArray, 4)
         writeLSB(originalFileRGB, getDividedFileSize(len(dividedFile)), 4 + 12)
