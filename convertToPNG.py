@@ -1,4 +1,4 @@
 from PIL import Image, ImageDraw
 
-image = Image.open("google.jpg") #Открываем изображение.
-image.save("google.png", "PNG")
+image = Image.open("me.jpg") #Открываем изображение.
+image.save("me.png")

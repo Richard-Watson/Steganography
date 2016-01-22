@@ -41,6 +41,50 @@ def writeLSB(ContainerList, bitList, shift = 0):
     for i in range(0, len(bitList)):
         ContainerList[shift + i] = (ContainerList[shift + i] & 0b11111100) | bitList[i]
 
+def readLSB(ContainerList, shift = 0, bytesAmount = 1):
+    byteSize = 8
+    byte = 0
+    for i in range(int(byteSize / 2 * shift), int(byteSize / 2 * shift) + int(byteSize / 2) * bytesAmount):
+        byte <<= 2
+        byte += ContainerList[i] & 0b11
+    return byte
+
+def getString(ContainerList, shift, bytesAmount = 1):
+    string = ""
+    for i in range(0, bytesAmount):
+        string += chr(readLSB(ContainerList, shift + i))
+    return string
+
+def desteg(container):
+    # Загружаем изображение-контейнер
+    image = Image.open(container)  # Открываем изображение
+    draw = ImageDraw.Draw(image)  # Создаем инструмент для рисования
+    width = image.size[0]  # Определяем ширину
+    height = image.size[1]  # Определяем высоту
+    pix = image.load()  # Выгружаем значения пикселей
+
+    byteSize = 8
+
+    ContainerList = getContainerList(pix, width, height, int(byteSize / 2))
+    extensionSize = readLSB(ContainerList)
+
+    ContainerList = getContainerList(pix, width, height, int(byteSize / 2) + extensionSize)
+    extension = getString(ContainerList, 1, int(extensionSize / 4))
+    if extension:
+        extension = "." + extension
+
+    ContainerList = getContainerList(pix, width, height, int(byteSize / 2) * 5 + extensionSize)
+    fileSize = readLSB(ContainerList, 1 + int(extensionSize / 4), 4)
+
+    ContainerList = getContainerList(pix, width, height, int(byteSize / 2) * 5 + extensionSize + fileSize)
+    fileData = getString(ContainerList, 1 + int(extensionSize / 4) + 4, int(fileSize / 4))
+
+    fileData = bytearray(bytes(fileData, encoding="iso8859-1"))
+    file = open('out' + extension, 'wb')
+    file.write(fileData)
+    file.close()
+
+    print("done")
 
 def steg(container, hideFile):
 
