@@ -81,16 +81,20 @@ def desteg(container, UseCryptography = True, CryptoPassword = ""):
     fileData = getString(ContainerList, 1 + int(extensionSize / 4) + 4, int(fileSize / 4))
     fileData = bytes(fileData, encoding="iso8859-1")
 
+    WrongPasswd = False
     if UseCryptography:
         passwdhash = hashlib.sha256()
         passwdhash.update(CryptoPassword.encode())
-        fileData = bytearray(crypt(fileData, passwdhash.hexdigest(), False))
+        try:
+            fileData = bytearray(crypt(fileData, passwdhash.hexdigest(), False))
+        except:
+            WrongPasswd = True
     else:
         fileData = bytearray(fileData)
-
-    file = open('out' + extension, 'wb')
-    file.write(fileData)
-    file.close()
+    if not WrongPasswd:
+        file = open('out' + extension, 'wb')
+        file.write(fileData)
+        file.close()
 
     print("done")
 
