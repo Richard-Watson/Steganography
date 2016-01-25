@@ -6,8 +6,8 @@ containerName = "me.png"
 hideName = "me.jpg"
 
 if not decode:
-    if not steg(containerName, hideName):
+    if not steg(containerName, hideName, CryptoPassword="vfczyz"):
         print("Контейнер мал")
 else:
     containerName = "me_steg.png"
-    desteg(containerName)
+    desteg(containerName, CryptoPassword="vfczyz")
