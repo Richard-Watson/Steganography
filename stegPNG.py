@@ -58,7 +58,6 @@ def getString(ContainerList, shift, bytesAmount = 1):
 def desteg(container):
     # Загружаем изображение-контейнер
     image = Image.open(container)  # Открываем изображение
-    draw = ImageDraw.Draw(image)  # Создаем инструмент для рисования
     width = image.size[0]  # Определяем ширину
     height = image.size[1]  # Определяем высоту
     pix = image.load()  # Выгружаем значения пикселей
