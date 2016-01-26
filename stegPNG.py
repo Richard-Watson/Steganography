@@ -1,4 +1,6 @@
 from PIL import Image, ImageDraw
+from Crypto import crypt
+import hashlib
 
 # Принимает bytearray или int, возвращает list значений 0-3
 def ByteToBitPairs(Input, byteAmount = 1):
@@ -55,7 +57,7 @@ def getString(ContainerList, shift, bytesAmount = 1):
         string += chr(readLSB(ContainerList, shift + i))
     return string
 
-def desteg(container):
+def desteg(container, UseCryptography = True, CryptoPassword = ""):
     # Загружаем изображение-контейнер
     image = Image.open(container)  # Открываем изображение
     width = image.size[0]  # Определяем ширину
@@ -77,15 +79,22 @@ def desteg(container):
 
     ContainerList = getContainerList(pix, width, height, int(byteSize / 2) * 5 + extensionSize + fileSize)
     fileData = getString(ContainerList, 1 + int(extensionSize / 4) + 4, int(fileSize / 4))
+    fileData = bytes(fileData, encoding="iso8859-1")
 
-    fileData = bytearray(bytes(fileData, encoding="iso8859-1"))
+    if UseCryptography:
+        passwdhash = hashlib.sha256()
+        passwdhash.update(CryptoPassword.encode())
+        fileData = bytearray(crypt(fileData, passwdhash.hexdigest(), False))
+    else:
+        fileData = bytearray(fileData)
+
     file = open('out' + extension, 'wb')
     file.write(fileData)
     file.close()
 
     print("done")
 
-def steg(container, hideFile):
+def steg(container, hideFile, UseCryptography = True, CryptoPassword = ""):
 
     # Загружаем изображение-контейнер
     image = Image.open(container)  # Открываем изображение
@@ -95,8 +104,13 @@ def steg(container, hideFile):
     pix = image.load()  # Выгружаем значения пикселей
 
     file = open(hideFile, "rb")
-    stegFileList = bytearray(file.read())
+    stegFileList = file.read()
     file.close()
+    if UseCryptography:
+        passwdhash = hashlib.sha256()
+        passwdhash.update(CryptoPassword.encode())
+        stegFileList = crypt(stegFileList, passwdhash.hexdigest())
+    stegFileList = bytearray(stegFileList)
 
     try:
         extensionList = ByteToBitPairs(bytearray(bytes(hideFile[hideFile.rindex(".") + 1:], encoding ='utf-8')))
