@@ -3,27 +3,27 @@ from Crypto import crypt
 import hashlib
 
 class Container:
-    def __init__(self, name):
-        self.name = name
-        self.image = Image.open(self.name)
+    def __init__(self, path):
+        self.path = path
+        self.image = Image.open(self.path)
         self.draw = ImageDraw.Draw(self.image)
         self.width = self.image.size[0]
         self.height = self.image.size[1]
         self.pix = self.image.load()
 
 class SteganoFile:
-    def __init__(self, name):
-        self.name = name
-        self.file = open(self.name, "rb")
+    def __init__(self, path):
+        self.path = path
+        self.file = open(self.path, "rb")
         self.Bytes = self.file.read()
         self.file.close()
 
         try:
-            self.extension = self.name[self.name.rindex(".") + 1:]
+            self.extension = self.path[self.path.rindex(".") + 1:]
         except ValueError:
             self.extension = ""
 
-        del self.name
+        del self.path
         del self.file
 
 container = Container("me.png")
