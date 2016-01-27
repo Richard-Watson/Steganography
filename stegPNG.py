@@ -4,8 +4,7 @@ import hashlib
 
 class Container:
     def __init__(self, path):
-        self.path = path
-        self.image = Image.open(self.path)
+        self.image = Image.open(path)
         self.draw = ImageDraw.Draw(self.image)
         self.width = self.image.size[0]
         self.height = self.image.size[1]
