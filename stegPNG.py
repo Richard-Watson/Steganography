@@ -1,6 +1,7 @@
 from PIL import Image, ImageDraw
 from Crypto import crypt
 import hashlib
+import sys
 
 class Container:
     def __init__(self, path):
@@ -26,39 +27,22 @@ class SteganedFile:
         del self.path
 
 class BitPairs:
-    def __init__(self, InputObject, bytesAmount = 1):
+    def __init__(self, InputObject, bytesAmount = 1): # Принимает bytearray или int, возвращает list значений 0-3
         self.Array = []
         byteSize = 8
         shift = byteSize * bytesAmount - 2
-        for i in range(0, len(InputObject)): ##Не работает с целочисленнымиНе
-            for j in range(0, int(byteSize / 2)):
-                self.Array.append((InputObject[i] & (0b11 << shift - j * 2)) >> shift - j * 2)
+        if type(InputObject) is bytes or type(InputObject) is bytearray:
+            for i in range(0, len(InputObject)):
+                for j in range(0, int(byteSize / 2)):
+                    self.Array.append((InputObject[i] & (0b11 << shift - j * 2)) >> shift - j * 2)
+        elif type(InputObject) is int:
+            for i in range(0, int(shift / 2) + 1):
+                self.Array.append((InputObject & (0b11 << shift - i * 2)) >> shift - i * 2)
 
 container = Container("me.png")
 steganoFile = SteganedFile("sherlock.torrent")
-steganoFile = BitPairs(4, bytesAmount=4)
+steganoFile = BitPairs(steganoFile.Bytes)
 print(True)
-
-# Принимает bytearray или int, возвращает list значений 0-3
-def ByteToBitPairs(Input, byteAmount = 1):
-    Output = []
-    byteSize = 8
-    shift = int(byteSize / 2 - 1) * 2
-    if type(Input) is bytearray:
-        for i in range(0, len(Input)):
-            for j in range(0, int(byteSize / 2)):
-                Output.append((Input[i] & (0b11000000 >> j * 2)) >> shift - j * 2)
-
-    elif type(Input) is int:
-        if byteAmount == 4:
-            shift = byteSize * 4 - 2
-            for i in range(0, byteSize * 2):
-                Output.append((Input & (0b11000000000000000000000000000000 >> i * 2)) >> shift - i * 2)
-        elif byteAmount == 1:
-            for i in range(0, int(byteSize / 2)):
-                Output.append((Input & (0b11000000 >> i * 2)) >> shift - i * 2)
-
-    return Output
 
 # Возвращает list значений 0-255 (цвета пикселей)
 def getContainerList(pix, width, height, requiredLength):
