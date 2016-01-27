@@ -1,7 +1,6 @@
 from PIL import Image, ImageDraw
 from Crypto import crypt
 import hashlib
-import sys
 
 class Container:
     def __init__(self, path):
