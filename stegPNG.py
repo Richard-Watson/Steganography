@@ -2,6 +2,34 @@ from PIL import Image, ImageDraw
 from Crypto import crypt
 import hashlib
 
+class Container:
+    def __init__(self, name):
+        self.name = name
+        self.image = Image.open(self.name)
+        self.draw = ImageDraw.Draw(self.image)
+        self.width = self.image.size[0]
+        self.height = self.image.size[1]
+        self.pix = self.image.load()
+
+class SteganoFile:
+    def __init__(self, name):
+        self.name = name
+        self.file = open(self.name, "rb")
+        self.Bytes = self.file.read()
+        self.file.close()
+
+        try:
+            self.extension = self.name[self.name.rindex(".") + 1:]
+        except ValueError:
+            self.extension = ""
+
+        del self.name
+        del self.file
+
+container = Container("me.png")
+steganoFile = SteganoFile("sherlock.torrent")
+print(True)
+
 # Принимает bytearray или int, возвращает list значений 0-3
 def ByteToBitPairs(Input, byteAmount = 1):
     Output = []
@@ -98,18 +126,12 @@ def desteg(container, UseCryptography = True, CryptoPassword = ""):
 
     print("done")
 
-def steg(container, hideFile, UseCryptography = True, CryptoPassword = ""):
+def steg(containerName, steganoFileName, UseCryptography = True, CryptoPassword = ""):
 
     # Загружаем изображение-контейнер
-    image = Image.open(container)  # Открываем изображение
-    draw = ImageDraw.Draw(image)  # Создаем инструмент для рисования
-    width = image.size[0]  # Определяем ширину
-    height = image.size[1]  # Определяем высоту
-    pix = image.load()  # Выгружаем значения пикселей
+    container = Container(containerName)
+    steganoFile = SteganoFile(steganoFileName)
 
-    file = open(hideFile, "rb")
-    stegFileList = file.read()
-    file.close()
     if UseCryptography:
         passwdhash = hashlib.sha256()
         passwdhash.update(CryptoPassword.encode())
