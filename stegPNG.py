@@ -11,12 +11,12 @@ class Container:
         self.height = self.image.size[1]
         self.pix = self.image.load()
 
-class SteganoFile:
+class SteganedFile:
     def __init__(self, path):
         self.path = path
-        self.file = open(self.path, "rb")
-        self.Bytes = self.file.read()
-        self.file.close()
+        file = open(self.path, "rb")
+        self.Bytes = file.read()
+        file.close()
 
         try:
             self.extension = self.path[self.path.rindex(".") + 1:]
@@ -24,10 +24,19 @@ class SteganoFile:
             self.extension = ""
 
         del self.path
-        del self.file
+
+class BitPairs:
+    def __init__(self, InputObject, bytesAmount = 1):
+        self.Array = []
+        byteSize = 8
+        shift = byteSize * bytesAmount - 2
+        for i in range(0, len(InputObject)): ##Не работает с целочисленнымиНе
+            for j in range(0, int(byteSize / 2)):
+                self.Array.append((InputObject[i] & (0b11 << shift - j * 2)) >> shift - j * 2)
 
 container = Container("me.png")
-steganoFile = SteganoFile("sherlock.torrent")
+steganoFile = SteganedFile("sherlock.torrent")
+steganoFile = BitPairs(4, bytesAmount=4)
 print(True)
 
 # Принимает bytearray или int, возвращает list значений 0-3
@@ -130,7 +139,7 @@ def steg(containerName, steganoFileName, UseCryptography = True, CryptoPassword 
 
     # Загружаем изображение-контейнер
     container = Container(containerName)
-    steganoFile = SteganoFile(steganoFileName)
+    steganoFile = SteganedFile(steganoFileName)
 
     if UseCryptography:
         passwdhash = hashlib.sha256()
