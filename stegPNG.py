@@ -131,9 +131,9 @@ def steg(containerName, steganingFileName, UseCryptography = True, CryptoPasswor
     if picture.height * picture.width * 3 >= requiredLength:
         picture.initializeByteList(requiredLength)
         extensionSizeBitPairs.write(picture, 0)
-        writeLSB(ContainerList, extensionList, len(extensionListSize))
-        writeLSB(ContainerList, steganingFileSizeBitPairs, len(extensionListSize) + len(extensionList))
-        writeLSB(ContainerList, stegFileList, len(extensionListSize) + len(extensionList) + len(steganingFileSizeBitPairs))
+        extensionBitPairs.write(picture, len(extensionSizeBitPairs.bitList))
+        steganingFileSizeBitPairs.write(picture, len(extensionSizeBitPairs.bitList) + len(extensionBitPairs.bitList))
+        steganingFileBitPairs.write(picture, len(extensionSizeBitPairs.bitList) + len(extensionBitPairs.bitList) + len(steganingFileSizeBitPairs.bitList))
 
         color = 0
         i = 0
