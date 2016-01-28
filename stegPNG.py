@@ -120,15 +120,15 @@ def steg(containerName, steganingFileName, UseCryptography = True, CryptoPasswor
 
     extensionSizeBitPairs = BitPairs(len(steganingFile.extension))
     extensionBitPairs = BitPairs(bytes(steganingFile.extension, encoding="UTF-8"))
-    stegFileListSize = ByteToBitPairs(len(stegFileList), 4)
-    requiredLength = len(extensionListSize) + len(extensionList) + len(stegFileListSize) + len(stegFileList)
+    steganingFileSizeBitPairs = BitPairs(len(steganingFile.Bytes), bytesAmount=4)
+    requiredLength = len(extensionListSize) + len(extensionList) + len(steganingFileSizeBitPairs) + len(stegFileList)
 
     if height * width * 3 >= requiredLength:
         ContainerList = getContainerList(pix, width, height, requiredLength)
         writeLSB(ContainerList, extensionListSize)
         writeLSB(ContainerList, extensionList, len(extensionListSize))
-        writeLSB(ContainerList, stegFileListSize, len(extensionListSize) + len(extensionList))
-        writeLSB(ContainerList, stegFileList, len(extensionListSize) + len(extensionList) + len(stegFileListSize))
+        writeLSB(ContainerList, steganingFileSizeBitPairs, len(extensionListSize) + len(extensionList))
+        writeLSB(ContainerList, stegFileList, len(extensionListSize) + len(extensionList) + len(steganingFileSizeBitPairs))
 
         color = 0
         i = 0
