@@ -10,71 +10,61 @@ class Container:
         self.height = self.image.size[1]
         self.pix = self.image.load()
 
-class SteganedFile:
+    def initializeByteList(self, requiredLength):
+        self.ByteList = []
+        i = 0
+        while i < self.width and len(self.ByteList) < requiredLength or len(self.ByteList) % 3:
+            j = 0
+            while j < self.height and len(self.ByteList) < requiredLength or len(self.ByteList) % 3:
+                k = 0
+                while k < 3 and len(self.ByteList) < requiredLength or len(self.ByteList) % 3:
+                    self.ByteList.append(self.pix[i, j][k])
+                    k += 1
+                j += 1
+            i += 1
+
+    def readLSB(self, shift, bytesAmount = 1):
+        byteSize = 8
+        posParameter = int(byteSize / 2) * shift
+        byte = 0
+        for i in range(posParameter, posParameter + int(byteSize / 2) * bytesAmount):
+            byte <<= 2
+            byte += self.ByteList[i] & 0b11
+        return byte
+
+    def readString(self, shift, bytesAmount = 1):
+        string = ""
+        for i in range(0, bytesAmount):
+            string +=  chr(self.readLSB(shift + i))
+        return string
+
+class SteganingFile:
     def __init__(self, path):
-        self.path = path
-        file = open(self.path, "rb")
+        file = open(path, "rb")
         self.Bytes = file.read()
         file.close()
 
         try:
-            self.extension = self.path[self.path.rindex(".") + 1:]
+            self.extension = path[path.rindex(".") + 1:]
         except ValueError:
             self.extension = ""
 
-        del self.path
-
 class BitPairs:
     def __init__(self, InputObject, bytesAmount = 1): # Принимает bytearray или int, возвращает list значений 0-3
-        self.Array = []
+        self.bitList = []
         byteSize = 8
         shift = byteSize * bytesAmount - 2
         if type(InputObject) is bytes or type(InputObject) is bytearray:
             for i in range(0, len(InputObject)):
                 for j in range(0, int(byteSize / 2)):
-                    self.Array.append((InputObject[i] & (0b11 << shift - j * 2)) >> shift - j * 2)
+                    self.bitList.append((InputObject[i] & (0b11 << shift - j * 2)) >> shift - j * 2)
         elif type(InputObject) is int:
             for i in range(0, int(shift / 2) + 1):
-                self.Array.append((InputObject & (0b11 << shift - i * 2)) >> shift - i * 2)
+                self.bitList.append((InputObject & (0b11 << shift - i * 2)) >> shift - i * 2)
 
-container = Container("me.png")
-steganoFile = SteganedFile("sherlock.torrent")
-steganoFile = BitPairs(steganoFile.Bytes)
-print(True)
-
-# Возвращает list значений 0-255 (цвета пикселей)
-def getContainerList(pix, width, height, requiredLength):
-    ContainerList = []
-    i = 0
-    while i < width and len(ContainerList) < requiredLength or len(ContainerList) % 3:
-        j = 0
-        while j < height and len(ContainerList) < requiredLength or len(ContainerList) % 3:
-            color = 0
-            while color < 3 and len(ContainerList) < requiredLength or len(ContainerList) % 3:
-                ContainerList.append(pix[i, j][color])
-                color += 1
-            j += 1
-        i += 1
-    return ContainerList
-
-# Записывает в последние 2 бита каждого байта ContainerList значения из bitList, начиная со смещения shift
-def writeLSB(ContainerList, bitList, shift = 0):
-    for i in range(0, len(bitList)):
-        ContainerList[shift + i] = (ContainerList[shift + i] & 0b11111100) | bitList[i]
-
-def readLSB(ContainerList, shift = 0, bytesAmount = 1):
-    byteSize = 8
-    byte = 0
-    for i in range(int(byteSize / 2 * shift), int(byteSize / 2 * shift) + int(byteSize / 2) * bytesAmount):
-        byte <<= 2
-        byte += ContainerList[i] & 0b11
-    return byte
-
-def getString(ContainerList, shift, bytesAmount = 1):
-    string = ""
-    for i in range(0, bytesAmount):
-        string += chr(readLSB(ContainerList, shift + i))
-    return string
+    def write(self, Container, shift):
+        for i in range(0, len(self.bitList)):
+            Container.ByteList[shift + i] = (Container.ByteList[shift + i] & 0b11111100) | self.bitList[i]
 
 def desteg(container, UseCryptography = True, CryptoPassword = ""):
     # Загружаем изображение-контейнер
@@ -117,24 +107,19 @@ def desteg(container, UseCryptography = True, CryptoPassword = ""):
 
     print("done")
 
-def steg(containerName, steganoFileName, UseCryptography = True, CryptoPassword = ""):
+def steg(containerName, steganingFileName, UseCryptography = True, CryptoPassword =""):
 
     # Загружаем изображение-контейнер
-    container = Container(containerName)
-    steganoFile = SteganedFile(steganoFileName)
+    picture = Container(containerName)
+    steganingFile = SteganingFile(steganingFileName)
 
     if UseCryptography:
         passwdhash = hashlib.sha256()
         passwdhash.update(CryptoPassword.encode())
         stegFileList = crypt(stegFileList, passwdhash.hexdigest())
-    stegFileList = bytearray(stegFileList)
 
-    try:
-        extensionList = ByteToBitPairs(bytearray(bytes(hideFile[hideFile.rindex(".") + 1:], encoding ='utf-8')))
-    except ValueError:
-        extensionList = ByteToBitPairs(bytearray(bytes("", encoding ='utf-8')))
-    extensionListSize = ByteToBitPairs(len(extensionList))
-    stegFileList = ByteToBitPairs(stegFileList)
+    extensionSizeBitPairs = BitPairs(len(steganingFile.extension))
+    extensionBitPairs = BitPairs(bytes(steganingFile.extension, encoding="UTF-8"))
     stegFileListSize = ByteToBitPairs(len(stegFileList), 4)
     requiredLength = len(extensionListSize) + len(extensionList) + len(stegFileListSize) + len(stegFileList)
 
@@ -158,3 +143,5 @@ def steg(containerName, steganoFileName, UseCryptography = True, CryptoPassword 
         return True
     else:
         return False
+
+steg("me.png", "sherlock.torrent", UseCryptography=False)
