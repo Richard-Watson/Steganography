@@ -7,7 +7,6 @@
 # WARNING! All changes made in this file will be lost!
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-from stegPNG import steg, desteg
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -77,48 +76,14 @@ class Ui_MainWindow(object):
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
-        self.pushButton.clicked.connect(self.DoSteg)
-        self.pushButton_Decode.clicked.connect(self.Unsteg)
-
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "Стеганография"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
         self.ContainerNameLabel.setText(_translate("MainWindow", "Название контейнера"))
         self.FileNameLabel.setText(_translate("MainWindow", "Название файла"))
         self.PasswordLabel.setText(_translate("MainWindow", "Пароль"))
         self.pushButton.setText(_translate("MainWindow", "Зашифровать"))
         self.PasswordLabel_Decode.setText(_translate("MainWindow", "Пароль"))
-        self.pushButton_Decode.setText(_translate("MainWindow", "Расшифровать"))
+        self.pushButton_Decode.setText(_translate("MainWindow", "Зашифровать"))
         self.ContainerNameLabel_Decode.setText(_translate("MainWindow", "Название контейнера"))
-
-    def DoSteg(self):
-        if (self.ContainerNameLine.text() and
-            self.FileNameLine.text() and
-            not self.PasswordLine.text()):
-                steg(self.ContainerNameLine.text(),
-                     self.FileNameLine.text())
-        elif (self.ContainerNameLine.text() and
-            self.FileNameLine.text() and
-            self.PasswordLine.text()):
-                steg(self.ContainerNameLine.text(),
-                     self.FileNameLine.text(),
-                     CryptoPassword=self.PasswordLine.text(),
-                     UseCryptography=True)
-
-    def Unsteg(self):
-        if self.ContainerNameLine_Decode.text() and not self.PasswordLine_Decode.text():
-            desteg(self.ContainerNameLine_Decode.text())
-        elif self.ContainerNameLine_Decode.text() and self.PasswordLine_Decode.text():
-            desteg(self.ContainerNameLine_Decode.text(),
-                   CryptoPassword=self.PasswordLine_Decode.text(),
-                   UseCryptography=True)
-
-if __name__ == "__main__":
-    import sys
-    app = QtWidgets.QApplication(sys.argv)
-    MainWindow = QtWidgets.QMainWindow()
-    ui = Ui_MainWindow()
-    ui.setupUi(MainWindow)
-    MainWindow.show()
-    sys.exit(app.exec_())
 
