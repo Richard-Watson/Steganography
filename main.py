@@ -8,6 +8,9 @@ class Window(QtWidgets.QMainWindow):
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
 
+        self.ui.pushButton.clicked.connect(self.DoSteg)
+        self.ui.pushButton_Decode.clicked.connect(self.Unsteg)
+
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
     mainWindow = Window()
