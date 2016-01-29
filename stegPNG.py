@@ -14,6 +14,7 @@ class Container:
         self.pix = self.image.load()
 
     def initializeByteList(self, requiredLength):
+        self.ByteList = []
         i = 0
         while i < self.width and len(self.ByteList) < requiredLength or len(self.ByteList) % 3:
             j = 0
@@ -25,7 +26,7 @@ class Container:
                 j += 1
             i += 1
 
-    def readLSB(self, shift, bytesAmount = 1):
+    def readByte(self, shift, bytesAmount = 1):
         byteSize = 8
         posParameter = int(byteSize / 2) * shift
         byte = 0
@@ -37,7 +38,7 @@ class Container:
     def readString(self, shift, bytesAmount = 1):
         string = ""
         for i in range(0, bytesAmount):
-            string +=  chr(self.readLSB(shift + i))
+            string +=  chr(self.readByte(shift + i))
         return string
 
 class SteganingFile:
@@ -74,22 +75,25 @@ def desteg(containerName, UseCryptography = True, CryptoPassword = ""):
 
     byteSize = 8
 
-    ContainerList = getContainerList(pix, width, height, int(byteSize / 2))
-    extensionSize = readLSB(ContainerList)
+    picture.initializeByteList(int(byteSize / 2))
+    extensionSize = picture.readByte(shift=0)
 
-    ContainerList = getContainerList(pix, width, height, int(byteSize / 2) + extensionSize)
-    extension = getString(ContainerList, 1, int(extensionSize / 4))
+    picture.initializeByteList(int(byteSize / 2) * (extensionSize + 1))
+    extension = picture.readString(shift=1, bytesAmount=extensionSize)
+
+    picture.initializeByteList(int(byteSize / 2) * (extensionSize + 1 + 4))
+    steganingFileSize = picture.readByte(shift=extensionSize + 1, bytesAmount=4)
+
+    picture.initializeByteList(int(byteSize / 2) * (extensionSize + 1 + 4 + steganingFileSize))
+    steganingFile = picture.readString(shift=extensionSize + 1 + 4, bytesAmount=steganingFileSize)
+
     if extension:
         extension = "." + extension
 
-    ContainerList = getContainerList(pix, width, height, int(byteSize / 2) * 5 + extensionSize)
-    fileSize = readLSB(ContainerList, 1 + int(extensionSize / 4), 4)
-
-    ContainerList = getContainerList(pix, width, height, int(byteSize / 2) * 5 + extensionSize + fileSize)
-    fileData = getString(ContainerList, 1 + int(extensionSize / 4) + 4, int(fileSize / 4))
-    fileData = bytes(fileData, encoding="iso8859-1")
+    steganingFile = bytes(steganingFile, encoding="iso8859-1")
 
     WrongPasswd = False
+    """
     if UseCryptography:
         passwdhash = hashlib.sha256()
         passwdhash.update(CryptoPassword.encode())
@@ -99,12 +103,14 @@ def desteg(containerName, UseCryptography = True, CryptoPassword = ""):
             WrongPasswd = True
     else:
         fileData = bytearray(fileData)
+    """
     if not WrongPasswd:
-        file = open('out' + extension, 'wb')
-        file.write(fileData)
+        try:
+            file = open(picture.path[:picture.path.rindex("/") + 1] + "out" + extension, 'wb')
+        except ValueError:
+            file = open("out" + extension, 'wb')
+        file.write(steganingFile)
         file.close()
-
-    print("done")
 
 def steg(containerName, steganingFileName, UseCryptography = True, CryptoPassword =""):
 
@@ -144,8 +150,7 @@ def steg(containerName, steganingFileName, UseCryptography = True, CryptoPasswor
                 j += 1
             i += 1
         picture.image.save(picture.path[:picture.path.rindex(".")] + "_steg" + picture.path[picture.path.rindex("."):])
+
         return True
     else:
         return False
-
-steg("me_steg.png", "sherlock.torrent", UseCryptography=False)
