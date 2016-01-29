@@ -3,15 +3,17 @@ from Crypto import crypt
 import hashlib
 
 class Container:
+    ByteList = []
+
     def __init__(self, path):
-        self.image = Image.open(path)
+        self.path = path
+        self.image = Image.open(self.path)
         self.draw = ImageDraw.Draw(self.image)
         self.width = self.image.size[0]
         self.height = self.image.size[1]
         self.pix = self.image.load()
 
     def initializeByteList(self, requiredLength):
-        self.ByteList = []
         i = 0
         while i < self.width and len(self.ByteList) < requiredLength or len(self.ByteList) % 3:
             j = 0
@@ -66,12 +68,9 @@ class BitPairs:
         for i in range(0, len(self.bitList)):
             Container.ByteList[shift + i] = (Container.ByteList[shift + i] & 0b11111100) | self.bitList[i]
 
-def desteg(container, UseCryptography = True, CryptoPassword = ""):
+def desteg(containerName, UseCryptography = True, CryptoPassword = ""):
     # Загружаем изображение-контейнер
-    image = Image.open(container)  # Открываем изображение
-    width = image.size[0]  # Определяем ширину
-    height = image.size[1]  # Определяем высоту
-    pix = image.load()  # Выгружаем значения пикселей
+    picture = Container(containerName)
 
     byteSize = 8
 
@@ -112,12 +111,12 @@ def steg(containerName, steganingFileName, UseCryptography = True, CryptoPasswor
     # Загружаем изображение-контейнер
     picture = Container(containerName)
     steganingFile = SteganingFile(steganingFileName)
-
+    """
     if UseCryptography:
         passwdhash = hashlib.sha256()
         passwdhash.update(CryptoPassword.encode())
         stegFileList = crypt(stegFileList, passwdhash.hexdigest())
-
+    """
     extensionSizeBitPairs = BitPairs(len(steganingFile.extension))
     extensionBitPairs = BitPairs(bytes(steganingFile.extension, encoding="UTF-8"))
     steganingFileSizeBitPairs = BitPairs(len(steganingFile.Bytes), bytesAmount=4)
@@ -135,18 +134,18 @@ def steg(containerName, steganingFileName, UseCryptography = True, CryptoPasswor
         steganingFileSizeBitPairs.write(picture, len(extensionSizeBitPairs.bitList) + len(extensionBitPairs.bitList))
         steganingFileBitPairs.write(picture, len(extensionSizeBitPairs.bitList) + len(extensionBitPairs.bitList) + len(steganingFileSizeBitPairs.bitList))
 
-        color = 0
+        k = 0
         i = 0
-        while i < width and color < requiredLength:
+        while i < picture.width and k < requiredLength:
             j = 0
-            while j < height and color < requiredLength:
-                draw.point((i, j), (ContainerList[color], ContainerList[color + 1], ContainerList[color + 2]))
-                color += 3
+            while j < picture.height and k < requiredLength:
+                picture.draw.point((i, j), (picture.ByteList[k], picture.ByteList[k + 1], picture.ByteList[k + 2]))
+                k += 3
                 j += 1
             i += 1
-        image.save(container[:-4] + "_steg" + container[-4:])
+        picture.image.save(picture.path[:picture.path.rindex(".")] + "_steg" + picture.path[picture.path.rindex("."):])
         return True
     else:
         return False
 
-steg("me.png", "sherlock.torrent", UseCryptography=False)
+steg("me_steg.png", "sherlock.torrent", UseCryptography=False)
