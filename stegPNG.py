@@ -1,5 +1,5 @@
 from PIL import Image, ImageDraw
-from Crypto import crypt
+from Crypto import cryptSHA
 import hashlib
 
 class Container:
@@ -69,7 +69,7 @@ class BitPairs:
         for i in range(0, len(self.bitList)):
             Container.ByteList[shift + i] = (Container.ByteList[shift + i] & 0b11111100) | self.bitList[i]
 
-def desteg(containerName, UseCryptography = True, CryptoPassword = ""):
+def desteg(containerName, UseCryptography = False, CryptoPassword = ""):
     # Загружаем изображение-контейнер
     picture = Container(containerName)
 
@@ -93,17 +93,16 @@ def desteg(containerName, UseCryptography = True, CryptoPassword = ""):
     steganingFile = bytes(steganingFile, encoding="iso8859-1")
 
     WrongPasswd = False
-    """
     if UseCryptography:
         passwdhash = hashlib.sha256()
         passwdhash.update(CryptoPassword.encode())
         try:
-            fileData = bytearray(crypt(fileData, passwdhash.hexdigest(), False))
+            steganingFile = bytearray(cryptSHA(steganingFile, passwdhash.hexdigest(), False))
         except:
             WrongPasswd = True
     else:
-        fileData = bytearray(fileData)
-    """
+        steganingFile = bytearray(steganingFile)
+
     if not WrongPasswd:
         try:
             file = open(picture.path[:picture.path.rindex("/") + 1] + "out" + extension, 'wb')
@@ -112,17 +111,15 @@ def desteg(containerName, UseCryptography = True, CryptoPassword = ""):
         file.write(steganingFile)
         file.close()
 
-def steg(containerName, steganingFileName, UseCryptography = True, CryptoPassword =""):
+def steg(containerName, steganingFileName, UseCryptography = False, CryptoPassword =""):
 
     # Загружаем изображение-контейнер
     picture = Container(containerName)
     steganingFile = SteganingFile(steganingFileName)
-    """
     if UseCryptography:
         passwdhash = hashlib.sha256()
         passwdhash.update(CryptoPassword.encode())
-        stegFileList = crypt(stegFileList, passwdhash.hexdigest())
-    """
+        steganingFile.Bytes = cryptSHA(steganingFile.Bytes, passwdhash.hexdigest())
     extensionSizeBitPairs = BitPairs(len(steganingFile.extension))
     extensionBitPairs = BitPairs(bytes(steganingFile.extension, encoding="UTF-8"))
     steganingFileSizeBitPairs = BitPairs(len(steganingFile.Bytes), bytesAmount=4)

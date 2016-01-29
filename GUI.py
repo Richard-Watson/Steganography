@@ -96,22 +96,22 @@ class Ui_MainWindow(object):
             self.FileNameLine.text() and
             not self.PasswordLine.text()):
                 steg(self.ContainerNameLine.text(),
-                     self.FileNameLine.text(),
-                     UseCryptography=False)
+                     self.FileNameLine.text())
         elif (self.ContainerNameLine.text() and
             self.FileNameLine.text() and
             self.PasswordLine.text()):
                 steg(self.ContainerNameLine.text(),
                      self.FileNameLine.text(),
-                     CryptoPassword=self.PasswordLine.text())
+                     CryptoPassword=self.PasswordLine.text(),
+                     UseCryptography=True)
 
     def Unsteg(self):
         if self.ContainerNameLine_Decode.text() and not self.PasswordLine_Decode.text():
-            desteg(self.ContainerNameLine_Decode.text(),
-                   UseCryptography=False)
+            desteg(self.ContainerNameLine_Decode.text())
         elif self.ContainerNameLine_Decode.text() and self.PasswordLine_Decode.text():
             desteg(self.ContainerNameLine_Decode.text(),
-                   CryptoPassword=self.PasswordLine_Decode.text())
+                   CryptoPassword=self.PasswordLine_Decode.text(),
+                   UseCryptography=True)
 
 if __name__ == "__main__":
     import sys
