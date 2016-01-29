@@ -4,7 +4,7 @@ from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 
-def crypt(bytestring, password, mode = True):
+def cryptSHA(bytestring, password, mode = True):
     password = bytes(password, encoding="UTF-8")
     salt = b'l,4B<\x0e\xff#\xc2\xe8\xe59\xbe\xdf8C'
     kdf = PBKDF2HMAC(
