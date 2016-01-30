@@ -63,6 +63,7 @@ class Window(QtWidgets.QMainWindow):
 #DO: Окно "Неверный ключ"
 #DO: Скрытие символов пароля
 #Комментарии
+#Помощник
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
