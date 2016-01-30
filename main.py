@@ -1,9 +1,9 @@
 import sys
 import os
 from UI import *
-from PyQt5 import QtCore, QtGui, QtWidgets
-from stegPNG import steg, desteg
-from convertToPNG import ConvertToPNG
+from PyQt5 import QtWidgets
+from Steganography import steg, desteg
+from Converter import ConvertToPNG
 
 class Window(QtWidgets.QMainWindow):
     def __init__(self, parent=None):
