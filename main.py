@@ -26,31 +26,27 @@ class Window(QtWidgets.QMainWindow):
         self.ui.Decode_Container_LineEdit.setText(QtWidgets.QFileDialog.getOpenFileName(self, 'Open file', os.getcwd())[0])
 
     def Encode_Start(self):
-        if os.name is 'posix':
-            os.chdir('/')
         if (self.ui.Encode_Container_LineEdit.text() and
                 self.ui.Encode_InputFile_LineEdit.text() and
                 not self.ui.Encode_Password_LineEdit.text()):
-            steg((self.ui.Encode_Container_LineEdit.text())[1:],
-                 (self.ui.Encode_InputFile_LineEdit.text())[1:],
+            steg(self.ui.Encode_Container_LineEdit.text(),
+                 self.ui.Encode_InputFile_LineEdit.text(),
                  UseCryptography=False)
         elif (self.ui.Encode_Container_LineEdit.text() and
                   self.ui.Encode_InputFile_LineEdit.text() and
                   self.ui.Encode_Password_LineEdit.text()):
-            steg((self.ui.Encode_Container_LineEdit.text())[1:],
-                 (self.ui.Encode_InputFile_LineEdit.text())[1:],
+            steg(self.ui.Encode_Container_LineEdit.text(),
+                 self.ui.Encode_InputFile_LineEdit.text(),
                  CryptoPassword=self.ui.Encode_Password_LineEdit.text(),
                  UseCryptography=True)
     def Decode_Start(self):
-        if os.name is 'posix':
-            os.chdir('/')
         if (self.ui.Decode_Container_LineEdit.text() and
                 not self.ui.Decode_Password_LineEdit.text()):
-            desteg((self.ui.Decode_Container_LineEdit.text())[1:],
+            desteg(self.ui.Decode_Container_LineEdit.text(),
                    UseCryptography=False)
         elif (self.ui.Decode_Container_LineEdit.text() and
                   self.ui.Decode_Password_LineEdit.text()):
-            desteg((self.ui.Decode_Container_LineEdit.text())[1:],
+            desteg(self.ui.Decode_Container_LineEdit.text(),
                    CryptoPassword=self.ui.Decode_Password_LineEdit.text(),
                    UseCryptography=True)
 
