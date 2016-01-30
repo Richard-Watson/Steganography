@@ -1,4 +1,5 @@
 from PIL import Image
 
-image = Image.open("me.jpg") #Открываем изображение.
-image.save("me.png")
+def ConvertToPNG(path):
+    image = Image.open(path) #Открываем изображение.
+    image.save(path[:path.rindex(".") + 1] + "png")

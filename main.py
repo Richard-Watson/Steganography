@@ -1,7 +1,9 @@
 import sys
-from GUI import *
+import os
+from UI import *
 from PyQt5 import QtCore, QtGui, QtWidgets
 from stegPNG import steg, desteg
+from convertToPNG import ConvertToPNG
 
 class Window(QtWidgets.QMainWindow):
     def __init__(self, parent=None):
@@ -9,32 +11,57 @@ class Window(QtWidgets.QMainWindow):
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
 
-        self.ui.pushButton.clicked.connect(self.DoSteg)
-        self.ui.pushButton_Decode.clicked.connect(self.Unsteg)
+        # Связываем объекты с действиями
+        self.ui.Encode_Container_ToolButton.clicked.connect(self.Encode_Container_Choose)
+        self.ui.Encode_InputFile_ToolButton.clicked.connect(self.Encode_InputFile_Choose)
+        self.ui.Encode_Password_pushButton.clicked.connect(self.Encode_Start)
 
-    def DoSteg(self):
-        if (self.ui.ContainerNameLine.text() and
-                self.ui.FileNameLine.text() and
-                not self.ui.PasswordLine.text()):
-            steg(self.ui.ContainerNameLine.text(),
-                 self.ui.FileNameLine.text())
-        elif (self.ui.ContainerNameLine.text() and
-                  self.ui.FileNameLine.text() and
-                  self.ui.PasswordLine.text()):
-            steg(self.ui.ContainerNameLine.text(),
-                 self.ui.FileNameLine.text(),
-                 CryptoPassword=self.ui.PasswordLine.text(),
+        self.ui.Decode_Container_ToolButton.clicked.connect(self.Decode_Container_Choose)
+        self.ui.Decode_Password_pushButton.clicked.connect(self.Decode_Start)
+
+        self.ui.Converter_Container_ToolButton.clicked.connect(self.Converter_Path_Choose)
+        self.ui.Converter_pushButton.clicked.connect(self.Convert_Start)
+
+    def Encode_Container_Choose(self):
+        self.ui.Encode_Container_LineEdit.setText(QtWidgets.QFileDialog.getOpenFileName(self, 'Open file', os.getcwd())[0])
+    def Encode_InputFile_Choose(self):
+        self.ui.Encode_InputFile_LineEdit.setText(QtWidgets.QFileDialog.getOpenFileName(self, 'Open file', os.getcwd())[0])
+    def Decode_Container_Choose(self):
+        self.ui.Decode_Container_LineEdit.setText(QtWidgets.QFileDialog.getOpenFileName(self, 'Open file', os.getcwd())[0])
+    def Converter_Path_Choose(self):
+        self.ui.Converter_Container_LineEdit.setText(QtWidgets.QFileDialog.getOpenFileName(self, 'Open file', os.getcwd())[0])
+
+
+    def Convert_Start(self):
+        if self.ui.Converter_Container_LineEdit.text():
+            ConvertToPNG(self.ui.Converter_Container_LineEdit.text())
+    def Encode_Start(self):
+        if (self.ui.Encode_Container_LineEdit.text() and
+                self.ui.Encode_InputFile_LineEdit.text() and
+                not self.ui.Encode_Password_LineEdit.text()):
+            steg(self.ui.Encode_Container_LineEdit.text(),
+                 self.ui.Encode_InputFile_LineEdit.text(),
+                 UseCryptography=False)
+        elif (self.ui.Encode_Container_LineEdit.text() and
+                  self.ui.Encode_InputFile_LineEdit.text() and
+                  self.ui.Encode_Password_LineEdit.text()):
+            steg(self.ui.Encode_Container_LineEdit.text(),
+                 self.ui.Encode_InputFile_LineEdit.text(),
+                 CryptoPassword=self.ui.Encode_Password_LineEdit.text(),
                  UseCryptography=True)
-
-    def Unsteg(self):
-        if (self.ui.ContainerNameLine_Decode.text() and
-                not self.ui.PasswordLine_Decode.text()):
-            desteg(self.ui.ContainerNameLine_Decode.text())
-        elif (self.ui.ContainerNameLine_Decode.text() and
-                  self.ui.PasswordLine_Decode.text()):
-            desteg(self.ui.ContainerNameLine_Decode.text(),
-                   CryptoPassword=self.PasswordLine_Decode.text(),
+    def Decode_Start(self):
+        if (self.ui.Decode_Container_LineEdit.text() and
+                not self.ui.Decode_Password_LineEdit.text()):
+            desteg(self.ui.Decode_Container_LineEdit.text(),
+                   UseCryptography=False)
+        elif (self.ui.Decode_Container_LineEdit.text() and
+                  self.ui.Decode_Password_LineEdit.text()):
+            desteg(self.ui.Decode_Container_LineEdit.text(),
+                   CryptoPassword=self.ui.Decode_Password_LineEdit.text(),
                    UseCryptography=True)
+
+#DO: Окно "Неверный ключ"
+#DO: Скрытие символов пароля
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
