@@ -54,37 +54,6 @@ class Window(QtWidgets.QMainWindow):
                    CryptoPassword=self.ui.Decode_Password_LineEdit.text(),
                    UseCryptography=True)
 
-
-
-
-    """
-    def DoSteg(self):
-        fname = QtWidgets.QFileDialog.getOpenFileName(self, 'Open file', '/')[0]
-        if (self.ui.ContainerNameLine.text() and
-                self.ui.FileNameLine.text() and
-                not self.ui.PasswordLine.text()):
-            steg(self.ui.ContainerNameLine.text(),
-                 self.ui.FileNameLine.text())
-        elif (self.ui.ContainerNameLine.text() and
-                  self.ui.FileNameLine.text() and
-                  self.ui.PasswordLine.text()):
-            steg(self.ui.ContainerNameLine.text(),
-                 self.ui.FileNameLine.text(),
-                 CryptoPassword=self.ui.PasswordLine.text(),
-                 UseCryptography=True)
-
-    def Unsteg(self):
-        if (self.ui.ContainerNameLine_Decode.text() and
-                not self.ui.PasswordLine_Decode.text()):
-            desteg(self.ui.ContainerNameLine_Decode.text())
-        elif (self.ui.ContainerNameLine_Decode.text() and
-                  self.ui.PasswordLine_Decode.text()):
-            desteg(self.ui.ContainerNameLine_Decode.text(),
-                   CryptoPassword=self.PasswordLine_Decode.text(),
-                   UseCryptography=True)
-
-    """
-
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
     mainWindow = Window()
