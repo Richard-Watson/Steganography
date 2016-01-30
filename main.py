@@ -60,8 +60,6 @@ class Window(QtWidgets.QMainWindow):
                    CryptoPassword=self.ui.Decode_Password_LineEdit.text(),
                    UseCryptography=True)
 
-#DO: Окно "Неверный ключ"
-#DO: Скрытие символов пароля
 #Комментарии
 #Помощник
 

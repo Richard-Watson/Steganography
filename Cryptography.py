@@ -24,4 +24,4 @@ def cryptSHA(bytestring, password, mode = True):
         try:
             return f.decrypt(bytestring)
         except InvalidToken:
-            print("Неверный ключ")
+            pass
