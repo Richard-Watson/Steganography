@@ -1,5 +1,5 @@
 from PIL import Image, ImageDraw
-from Cryptography import cryptSHA
+from Crypt import cryptSHA
 import hashlib
 
 class Container:
