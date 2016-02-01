@@ -141,7 +141,7 @@ def steg(containerName, steganingFileName, UseCryptography = False, CryptoPasswo
                 k += 3
                 j += 1
             i += 1
-        picture.image.save(picture.path[:picture.path.rindex(".")] + "_steg" + picture.path[picture.path.rindex("."):])
+        picture.image.save(picture.path[:picture.path.rindex(".")] + "_steg" + ".png")
 
         return True
     else:
