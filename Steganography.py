@@ -13,6 +13,7 @@ class Container:
         self.height = self.image.size[1]
         self.pix = self.image.load()
 
+    # Load pixel values
     def initializeByteList(self, requiredLength):
         self.ByteList = []
         i = 0
@@ -26,6 +27,7 @@ class Container:
                 j += 1
             i += 1
 
+    # Read 4 * bytesAmount items in self.ByteList and return int value
     def readByte(self, shift, bytesAmount = 1):
         byteSize = 8
         posParameter = int(byteSize / 2) * shift
@@ -35,6 +37,7 @@ class Container:
             byte += self.ByteList[i] & 0b11
         return byte
 
+    # Read bytesAmount chars and return string
     def readString(self, shift, bytesAmount = 1):
         string = ""
         for i in range(0, bytesAmount):
@@ -53,7 +56,9 @@ class SteganingFile:
             self.extension = ""
 
 class BitPairs:
-    def __init__(self, InputObject, bytesAmount = 1): # Принимает bytearray или int, возвращает list значений 0-3
+    # InputObject - bytearray or int
+    # Return list with 0-3 values
+    def __init__(self, InputObject, bytesAmount = 1):
         self.bitList = []
         byteSize = 8
         shift = byteSize * bytesAmount - 2
@@ -65,16 +70,19 @@ class BitPairs:
             for i in range(0, int(shift / 2) + 1):
                 self.bitList.append((InputObject & (0b11 << shift - i * 2)) >> shift - i * 2)
 
+    # Write bitList to last 2 bits of every byte of Container.ByteList
     def write(self, Container, shift):
         for i in range(0, len(self.bitList)):
             Container.ByteList[shift + i] = (Container.ByteList[shift + i] & 0b11111100) | self.bitList[i]
 
+# Desteganography function
 def desteg(containerName, UseCryptography = False, CryptoPassword = ""):
-    # Загружаем изображение-контейнер
+    # Load picture container
     picture = Container(containerName)
 
     byteSize = 8
 
+    # Read service information from file and encoded data
     picture.initializeByteList(int(byteSize / 2))
     extensionSize = picture.readByte(shift=0)
 
@@ -108,15 +116,16 @@ def desteg(containerName, UseCryptography = False, CryptoPassword = ""):
 
     return "Decoded as out" + extension
 
+# Steganography function
 def steg(containerName, steganingFileName, UseCryptography = False, CryptoPassword =""):
 
-    # Загружаем изображение-контейнер
-    picture = Container(containerName)
-    steganingFile = SteganingFile(steganingFileName)
+    picture = Container(containerName) # Load picture container
+    steganingFile = SteganingFile(steganingFileName) # Load file
     if UseCryptography:
         passwdhash = hashlib.sha256()
         passwdhash.update(CryptoPassword.encode())
         steganingFile.Bytes = cryptXOR(steganingFile.Bytes, passwdhash.hexdigest())
+
     extensionSizeBitPairs = BitPairs(len(steganingFile.extension))
     extensionBitPairs = BitPairs(bytes(steganingFile.extension, encoding="UTF-8"))
     steganingFileSizeBitPairs = BitPairs(len(steganingFile.Bytes), bytesAmount=4)
@@ -135,6 +144,7 @@ def steg(containerName, steganingFileName, UseCryptography = False, CryptoPasswo
         steganingFileSizeBitPairs.write(picture, len(extensionSizeBitPairs.bitList) + len(extensionBitPairs.bitList))
         steganingFileBitPairs.write(picture, len(extensionSizeBitPairs.bitList) + len(extensionBitPairs.bitList) + len(steganingFileSizeBitPairs.bitList))
 
+        #Write pixels to picture
         k = 0
         i = 0
         while i < picture.width and k < requiredLength:

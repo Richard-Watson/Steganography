@@ -1,3 +1,8 @@
+"""
+XOR encryption
+Input - bytes
+password - string
+"""
 def cryptXOR(Input, password):
     Output = ""
     for i in range(len(Input)):
