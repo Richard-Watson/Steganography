@@ -106,6 +106,8 @@ def desteg(containerName, UseCryptography = False, CryptoPassword = ""):
     file.write(steganingFile)
     file.close()
 
+    return "Decoded as out" + extension
+
 def steg(containerName, steganingFileName, UseCryptography = False, CryptoPassword =""):
 
     # Загружаем изображение-контейнер
@@ -118,14 +120,15 @@ def steg(containerName, steganingFileName, UseCryptography = False, CryptoPasswo
     extensionSizeBitPairs = BitPairs(len(steganingFile.extension))
     extensionBitPairs = BitPairs(bytes(steganingFile.extension, encoding="UTF-8"))
     steganingFileSizeBitPairs = BitPairs(len(steganingFile.Bytes), bytesAmount=4)
-    steganingFileBitPairs = BitPairs(steganingFile.Bytes)
-    del steganingFile
+
     requiredLength = len(extensionSizeBitPairs.bitList) +\
                      len(extensionBitPairs.bitList) +\
                      len(steganingFileSizeBitPairs.bitList) +\
-                     len(steganingFileBitPairs.bitList)
+                     len(steganingFile.Bytes) * 4
 
     if picture.height * picture.width * 3 >= requiredLength:
+        steganingFileBitPairs = BitPairs(steganingFile.Bytes)
+
         picture.initializeByteList(requiredLength)
         extensionSizeBitPairs.write(picture, 0)
         extensionBitPairs.write(picture, len(extensionSizeBitPairs.bitList))
@@ -142,7 +145,6 @@ def steg(containerName, steganingFileName, UseCryptography = False, CryptoPasswo
                 j += 1
             i += 1
         picture.image.save(picture.path[:picture.path.rindex(".")] + "_steg" + ".png")
-
-        return True
+        return "Encoded as " + picture.path[picture.path.rindex("/") + 1: ] + "_steg" + ".png"
     else:
-        return False
+        return "Not enough space"

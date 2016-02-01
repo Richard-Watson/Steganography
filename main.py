@@ -29,30 +29,32 @@ class Window(QtWidgets.QMainWindow):
         if (self.ui.Encode_Container_LineEdit.text() and
                 self.ui.Encode_InputFile_LineEdit.text() and
                 not self.ui.Encode_Password_LineEdit.text()):
-            steg(self.ui.Encode_Container_LineEdit.text(),
-                 self.ui.Encode_InputFile_LineEdit.text(),
-                 UseCryptography=False)
+            result = steg(self.ui.Encode_Container_LineEdit.text(),
+                          self.ui.Encode_InputFile_LineEdit.text(),
+                          UseCryptography=False)
         elif (self.ui.Encode_Container_LineEdit.text() and
                   self.ui.Encode_InputFile_LineEdit.text() and
                   self.ui.Encode_Password_LineEdit.text()):
-            steg(self.ui.Encode_Container_LineEdit.text(),
-                 self.ui.Encode_InputFile_LineEdit.text(),
-                 CryptoPassword=self.ui.Encode_Password_LineEdit.text(),
-                 UseCryptography=True)
+            result = steg(self.ui.Encode_Container_LineEdit.text(),
+                          self.ui.Encode_InputFile_LineEdit.text(),
+                          CryptoPassword=self.ui.Encode_Password_LineEdit.text(),
+                          UseCryptography=True)
+        self.ui.statusbar.showMessage(result, 5000)
     def Decode_Start(self):
         if (self.ui.Decode_Container_LineEdit.text() and
                 not self.ui.Decode_Password_LineEdit.text()):
-            desteg(self.ui.Decode_Container_LineEdit.text(),
-                   UseCryptography=False)
+            result =  desteg(self.ui.Decode_Container_LineEdit.text(),
+                             UseCryptography=False)
         elif (self.ui.Decode_Container_LineEdit.text() and
                   self.ui.Decode_Password_LineEdit.text()):
-            desteg(self.ui.Decode_Container_LineEdit.text(),
-                   CryptoPassword=self.ui.Decode_Password_LineEdit.text(),
-                   UseCryptography=True)
+            result = desteg(self.ui.Decode_Container_LineEdit.text(),
+                            CryptoPassword=self.ui.Decode_Password_LineEdit.text(),
+                            UseCryptography=True)
+        self.ui.statusbar.showMessage(result, 5000)
 
 #Комментарии
 #Помощник
-#Информация о выполнении действий
+#Прогресс бар
 #Окно About
 
 if __name__ == "__main__":
