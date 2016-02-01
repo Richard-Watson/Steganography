@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/Steganographer.iml" filepath="$PROJECT_DIR$/.idea/Steganographer.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../Steganographer/.idea/Steganographer.iml" filepath="$PROJECT_DIR$/../Steganographer/.idea/Steganographer.iml" />
     </modules>
   </component>
 </project>
