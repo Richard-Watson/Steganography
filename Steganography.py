@@ -1,5 +1,5 @@
 from PIL import Image, ImageDraw
-from Cryptography import cryptXOR
+from Crypt import cryptSHA
 import hashlib
 
 class Container:
@@ -92,19 +92,24 @@ def desteg(containerName, UseCryptography = False, CryptoPassword = ""):
 
     steganingFile = bytes(steganingFile, encoding="iso8859-1")
 
+    WrongPasswd = False
     if UseCryptography:
         passwdhash = hashlib.sha256()
         passwdhash.update(CryptoPassword.encode())
-        steganingFile = cryptXOR(steganingFile, passwdhash.hexdigest())
+        try:
+            steganingFile = bytearray(cryptSHA(steganingFile, passwdhash.hexdigest(), False))
+        except:
+            WrongPasswd = True
+    else:
+        steganingFile = bytearray(steganingFile)
 
-    steganingFile = bytearray(steganingFile)
-
-    try:
-        file = open(picture.path[:picture.path.rindex("/") + 1] + "out" + extension, 'wb')
-    except ValueError:
-        file = open("out" + extension, 'wb')
-    file.write(steganingFile)
-    file.close()
+    if not WrongPasswd:
+        try:
+            file = open(picture.path[:picture.path.rindex("/") + 1] + "out" + extension, 'wb')
+        except ValueError:
+            file = open("out" + extension, 'wb')
+        file.write(steganingFile)
+        file.close()
 
 def steg(containerName, steganingFileName, UseCryptography = False, CryptoPassword =""):
 
@@ -114,7 +119,7 @@ def steg(containerName, steganingFileName, UseCryptography = False, CryptoPasswo
     if UseCryptography:
         passwdhash = hashlib.sha256()
         passwdhash.update(CryptoPassword.encode())
-        steganingFile.Bytes = cryptXOR(steganingFile.Bytes, passwdhash.hexdigest())
+        steganingFile.Bytes = cryptSHA(steganingFile.Bytes, passwdhash.hexdigest())
     extensionSizeBitPairs = BitPairs(len(steganingFile.extension))
     extensionBitPairs = BitPairs(bytes(steganingFile.extension, encoding="UTF-8"))
     steganingFileSizeBitPairs = BitPairs(len(steganingFile.Bytes), bytesAmount=4)
