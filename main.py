@@ -12,6 +12,9 @@ class Window(QtWidgets.QMainWindow):
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
 
+        #Set Label(Version)
+        self.ui.About_Version_Label.setText("v1.03")
+
         # Connect buttons with functions
         self.ui.Encode_Container_ToolButton.clicked.connect(self.Encode_Container_Choose)
         self.ui.Encode_InputFile_ToolButton.clicked.connect(self.Encode_InputFile_Choose)
@@ -61,7 +64,6 @@ class Window(QtWidgets.QMainWindow):
 
 # TODO: Helper
 # TODO: Progress bar
-# TODO: About window
 
 # Show main window
 if __name__ == "__main__":

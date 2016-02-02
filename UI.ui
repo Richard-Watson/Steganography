@@ -53,7 +53,7 @@
       <x>0</x>
       <y>0</y>
       <width>331</width>
-      <height>201</height>
+      <height>215</height>
      </rect>
     </property>
     <property name="currentIndex">
@@ -76,7 +76,7 @@
      <widget class="QLabel" name="Encode_Container_Label">
       <property name="geometry">
        <rect>
-        <x>0</x>
+        <x>10</x>
         <y>10</y>
         <width>325</width>
         <height>20</height>
@@ -125,7 +125,7 @@
      <widget class="QLabel" name="Encode_InputFile_Label">
       <property name="geometry">
        <rect>
-        <x>0</x>
+        <x>10</x>
         <y>65</y>
         <width>325</width>
         <height>20</height>
@@ -154,7 +154,7 @@
      <widget class="QLabel" name="Encode_Password_Label">
       <property name="geometry">
        <rect>
-        <x>0</x>
+        <x>10</x>
         <y>120</y>
         <width>325</width>
         <height>20</height>
@@ -188,7 +188,7 @@
      <widget class="QLabel" name="Decode_Container_Label">
       <property name="geometry">
        <rect>
-        <x>0</x>
+        <x>10</x>
         <y>10</y>
         <width>325</width>
         <height>20</height>
@@ -224,7 +224,7 @@
      <widget class="QLabel" name="Decode_Password_Label">
       <property name="geometry">
        <rect>
-        <x>0</x>
+        <x>10</x>
         <y>65</y>
         <width>325</width>
         <height>20</height>
@@ -264,6 +264,72 @@
       </property>
      </widget>
     </widget>
+    <widget class="QWidget" name="About">
+     <attribute name="title">
+      <string>About</string>
+     </attribute>
+     <widget class="QLabel" name="About_Developer_Label">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>5</y>
+        <width>241</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Developer: Vladislav Lisyanskiy</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="About_email_Label">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>35</y>
+        <width>241</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>e-mail: vladislav.lisyanskiy@gmail.com</string>
+      </property>
+      <property name="openExternalLinks">
+       <bool>false</bool>
+      </property>
+     </widget>
+     <widget class="QLabel" name="About_VK_Label">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>65</y>
+        <width>241</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>VK: vk.com/vladislav.lisyanskiy</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="About_Version_Label">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>160</y>
+        <width>320</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="layoutDirection">
+       <enum>Qt::LeftToRight</enum>
+      </property>
+      <property name="text">
+       <string>v1.02</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+      </property>
+     </widget>
+    </widget>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
@@ -277,6 +343,11 @@
    </property>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
+  <action name="actionAbout">
+   <property name="text">
+    <string>About</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections/>
