@@ -155,6 +155,6 @@ def steg(containerName, steganingFileName, UseCryptography = False, CryptoPasswo
                 j += 1
             i += 1
         picture.image.save(picture.path[:picture.path.rindex(".")] + "_steg" + ".png")
-        return "Encoded as " + picture.path[picture.path.rindex("/") + 1: ] + "_steg" + ".png"
+        return "Encoded as " + picture.path[picture.path.rindex("/") + 1:picture.path.rindex(".")] + "_steg" + ".png"
     else:
         return "Not enough space"

@@ -13,7 +13,7 @@ class Window(QtWidgets.QMainWindow):
         self.ui.setupUi(self)
 
         #Set Label(Version)
-        self.ui.About_Version_Label.setText("v1.03")
+        self.ui.About_Version_Label.setText("v1.04")
 
         # Connect buttons with functions
         self.ui.Encode_Container_ToolButton.clicked.connect(self.Encode_Container_Choose)
