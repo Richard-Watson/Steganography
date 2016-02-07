@@ -56,8 +56,10 @@ class SteganingFile:
             self.extension = ""
 
 class BitPairs:
-    # InputObject - bytearray or int
-    # Return list with 0-3 values
+    """
+    InputObject - bytearray or int
+    Return list with 0-3 values
+    """
     def __init__(self, InputObject, bytesAmount = 1):
         self.bitList = []
         byteSize = 8
